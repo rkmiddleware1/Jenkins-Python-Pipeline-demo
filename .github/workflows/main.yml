@@ -1,29 +1,43 @@
-name: build Python application
-on: # multiple triggers when this workflow can run
- workflow_dispatch:  # manually run code
+name: workflow variables
+on:
  push:
-   branches:
-     - master
- pull_request:
-   branches:
-     - master
+env:
+ PYTHON_VERSION: 3.9
 jobs:
   job1:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Clone the repo
-      uses: actions/checkout@v6
-    - name: Install Python on runner
-      uses: actions/setup-python@v6
+   runs-on: ubuntu-latest
+   steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: Setup python ${{ env.PYTHON_VERSION }}
+      uses: actions/setup-python@v5
       with:
-        python-version: '3.11'
-    - name: Install python dependencies
-      run: |
-       pip install --upgrade pip
-       pip install -r requirements.txt
-    - name: set PythonPATH
-      run: echo "PYTHONPATH"=$GITHUB_WORKSPACE >> $GITHUB_ENV
-    - name: Run tests
-      run: pytest tests --cov=app --cov-report=xml
- 
+       python-version: ${{ env.PYTHON_VERSION }}
+  job2:
+   runs-on: ubuntu-latest
+   env:
+     MYJOB-PYTHON-VERSION: 3.8
+   steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: Setup python ${{ env.MYJOB-PYTHON-VERSION }}
+      uses: actions/setup-python@v5
+      with:
+       python-version: ${{ env.MYJOB-PYTHON-VERSION }}
+  job3:
+   runs-on: ubuntu-latest
+   steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: Setup python
+      env:
+       MYSTEP-PYTHON-VERSION: 3.11
+      uses: actions/setup-python@v5
+      with:
+       python-version: ${{ env.MYSTEP-PYTHON-VERSION }}
+    - name: Print a message
+      env:
+       APPLICATION: python
+      run: echo "The application installed is $APPLICATION"
+   
 
